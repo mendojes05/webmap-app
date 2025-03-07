@@ -26,12 +26,12 @@ import { Handle, Position} from '@xyflow/react';
 //     </div>
 //   );
 // };
-export default function CustomNode({ data }) {
+export default function Bubble({ data }) {
   return (
     <div style={{ padding: 10, border: "1px solid #ddd", borderRadius: 5, background: "white" }}>
-      <Handle type="target" position="top" style={{ background: "red" }} />
+      <Handle type="target" position={Position.top} style={{ background: "red" }} />
       <div>{data.label}</div>
-      <Handle type="source" position="bottom" style={{ background: "blue" }} />
+      <Handle type="source" position={Position.top} style={{ background: "blue" }} />
     </div>
   );
 }

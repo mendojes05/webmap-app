@@ -44,7 +44,7 @@ export default function App() {
           ? {
               ...node,
               data: { ...node.data, size: node.data.size + 10 },
-              style: { width: node.data.size + 110, height: node.data.size + 10 },
+              style: { width: node.data.size + 70, height: node.data.size + 10 },
             }
           : node
       )
@@ -128,6 +128,7 @@ export default function App() {
 
   // Function to delete a node
   const deleteNode = () => {
+    
     setNodes((nds) => nds.filter((node) => node.id !== selectedNode.id));
     setEdges((eds) => eds.filter((edge) => edge.source !== selectedNode.id && edge.target !== selectedNode.id));
     setSelectedNode(null);
@@ -136,6 +137,18 @@ export default function App() {
   // Function to delete an edge
   const onEdgeClick = (event, edge) => {
     setEdges((eds) => eds.filter((e) => e.id !== edge.id));
+    
+    setNodes((nds) =>
+      nds.map((node) =>
+        node.id === edge.target
+          ? {
+              ...node,
+              data: { ...node.data, size: node.data.size - 10 },
+              style: { width: (node.style.width || 100) - 10, height: (node.style.height || 40) - 10 },
+            }
+          : node
+      )
+    );
   };
 
   return (
