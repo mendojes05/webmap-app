@@ -13,10 +13,9 @@ import {
 } from "@xyflow/react";
 
 import "@xyflow/react/dist/style.css";
-import TextUpdaterNode from "./TextUpdaterNode";
 import Bubble from "./Bubble";
 
-const nodeTypes = { textUpdater: TextUpdaterNode, bubble: Bubble };
+const nodeTypes = {bubble: Bubble };
 
 const initialNodes = [];
 
@@ -87,7 +86,7 @@ export default function App() {
       position: { x: Math.random() * 400, y: Math.random() * 400 },
       data: { label: nodeName, info: [], size: 40 },
       style: { width: 100, height: 40 },
-      // type: 'bubble'
+      type: 'bubble'
     };
 
     setNodes((nds) => [...nds, newNode]);
@@ -98,6 +97,8 @@ export default function App() {
   // Function to handle node selection
   const onNodeClick = (_, node) => {
     setSelectedNode(node);
+    setBio(node.data.bio || ""); // Set bio to node's existing bio or empty string
+
   };
 
   // Function to add info to selected node
@@ -124,6 +125,22 @@ export default function App() {
           : node
       )
     );
+  };
+  // Add new state for bio editing
+  const [bio, setBio] = useState("");
+
+  // Function to handle bio editing
+  const editBio = () => {
+    if (!selectedNode) return;
+  
+    setNodes((nds) =>
+      nds.map((node) =>
+        node.id === selectedNode.id ? { ...node, data: { ...node.data, bio } } : node
+      )
+    );
+  
+    // Update the selectedNode's bio state immediately
+    setSelectedNode((prev) => prev && { ...prev, data: { ...prev.data, bio } });
   };
 
   // Function to delete a node
@@ -191,6 +208,38 @@ export default function App() {
           <p><strong>Name:</strong> {selectedNode.data.label}</p>
           <p><strong>Times Referenced:</strong> {getIncomingConnections(selectedNode.id)}</p>
 
+          {/* Editable Bio */}
+          <h4>Bio:</h4>
+          <textarea
+            value={bio}
+            onChange={(e) => setBio(e.target.value)}
+            placeholder="Enter author bio"
+            style={{
+              width: "100%",
+              height: "60px",
+              padding: "5px",
+              border: "1px solid #ccc",
+              borderRadius: "5px",
+              resize: "none",
+            }}
+          />
+          <button
+            onClick={editBio}
+            style={{
+              width: "100%",
+              padding: "5px",
+              marginTop: "5px",
+              background: "green",
+              color: "white",
+              border: "none",
+              cursor: "pointer",
+              borderRadius: "5px",
+            }}
+          >
+            Save Bio
+          </button>
+
+
           {/* Editable List */}
           <h4>Works:</h4>
           <ul>
@@ -212,7 +261,7 @@ export default function App() {
             style={{ width: "100%", padding: "5px", marginBottom: "5px" }}
           />
           <button onClick={addInfoToNode} style={{ width: "100%", padding: "5px", marginBottom: "5px" }}>
-            Add Info
+            Add Works
           </button>
 
           {/* Delete Node Button */}
