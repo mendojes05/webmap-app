@@ -24,10 +24,11 @@ const initialEdges = [];
 export default function App() {
   const [nodes, setNodes] = useNodesState(initialNodes);
   const [edges, setEdges] = useEdgesState(initialEdges);
-  const [nodeCount, setNodeCount] = useState(3);
+  const [nodeCount, setNodeCount] = useState(0);
   const [nodeName, setNodeName] = useState("");
   const [selectedNode, setSelectedNode] = useState(null);
   const [newInfo, setNewInfo] = useState("");
+  const [isEditingBio, setIsEditingBio] = useState(false);
 
   const onNodesChange = useCallback((changes) => {
     setNodes((nds) => applyNodeChanges(changes, nds));
@@ -72,6 +73,11 @@ export default function App() {
       const { nodes, edges } = JSON.parse(e.target.result);
       setNodes(nodes);
       setEdges(edges);
+
+    // Find the highest node ID and update nodeCount accordingly
+    const maxNodeId = nodes.reduce((max, node) => Math.max(max, parseInt(node.id, 10)), 0);
+    setNodeCount(maxNodeId + 1); // Ensure new nodes get unique IDs
+
     };
     fileReader.readAsText(event.target.files[0]);
   };
@@ -114,6 +120,7 @@ export default function App() {
     );
 
     setNewInfo(""); // Clear input field
+    setSelectedNode(updatedNode); // Update selectedNode to reflect changes
   };
 
   // Function to delete a specific info entry
@@ -210,34 +217,61 @@ export default function App() {
 
           {/* Editable Bio */}
           <h4>Bio:</h4>
-          <textarea
-            value={bio}
-            onChange={(e) => setBio(e.target.value)}
-            placeholder="Enter author bio"
-            style={{
-              width: "100%",
-              height: "60px",
-              padding: "5px",
-              border: "1px solid #ccc",
-              borderRadius: "5px",
-              resize: "none",
-            }}
-          />
-          <button
-            onClick={editBio}
-            style={{
-              width: "100%",
-              padding: "5px",
-              marginTop: "5px",
-              background: "green",
-              color: "white",
-              border: "none",
-              cursor: "pointer",
-              borderRadius: "5px",
-            }}
-          >
-            Save Bio
-          </button>
+        {isEditingBio ? (
+          <>
+            <textarea
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+              placeholder="Enter author bio"
+              style={{
+                width: "100%",
+                height: "60px",
+                padding: "5px",
+                border: "1px solid #ccc",
+                borderRadius: "5px",
+                resize: "none",
+              }}
+            />
+            <button
+              onClick={() => {
+                editBio();
+                setIsEditingBio(false); // Hide the input box after saving
+              }}
+              style={{
+                width: "100%",
+                padding: "5px",
+                marginTop: "5px",
+                background: "green",
+                color: "white",
+                border: "none",
+                cursor: "pointer",
+                borderRadius: "5px",
+              }}
+            >
+              Save Bio
+            </button>
+          </>
+        ) : (
+          <>
+            <p>{selectedNode.data.bio || "No bio available."}</p>
+            <button
+              onClick={() => setIsEditingBio(true)}
+              style={{
+                width: "100%",
+                padding: "5px",
+                marginTop: "5px",
+                background: "blue",
+                color: "white",
+                border: "none",
+                cursor: "pointer",
+                borderRadius: "5px",
+              }}
+            >
+              Edit Bio
+            </button>
+          </>
+        )}
+
 
 
           {/* Editable List */}
